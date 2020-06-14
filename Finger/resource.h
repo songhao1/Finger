@@ -18,6 +18,7 @@
 #define IDC_BTN_STEP_12A                1011
 #define IDC_BTN_STEP_12B                1012
 #define IDC_BTN_ADD_IMAGE               1013
+#define IDC_BTN_STEP_12B2               1013
 #define IDC_BTN_MATCH_IMAGE             1014
 #define IDC_BTN_CONNECT                 1015
 #define IDC_BTN_CAPTURE                 1016
@@ -31,6 +32,18 @@
 #define IDC_STATIC_IMG_2                1024
 #define IDC_EDIT_NAME                   1025
 #define IDC_ZKFPENGX                    1026
+#define IDC_STATIC_IMG_3                1027
+#define IDC_STATIC_IMG_4                1028
+#define IDC_STATIC_IMG_5                1029
+#define IDC_STATIC_IMG_6                1030
+#define IDC_STATIC_IMG_7                1031
+#define IDC_STATIC_IMG_8                1032
+#define IDC_STATIC_IMG_9                1033
+#define IDC_STATIC_IMG_10               1034
+#define IDC_STATIC_IMG_11               1035
+#define IDC_STATIC_IMG_12               1036
+#define IDC_EDIT_NAME2                  1037
+#define IDC_EDIT_XUEHAO                 1038
 
 // Next default values for new objects
 // 
@@ -38,7 +51,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1037
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

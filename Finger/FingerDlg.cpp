@@ -1,10 +1,14 @@
-﻿//#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_DEPRECATE
+#pragma warning(disable:4996)
+//#define _CRT_SECURE_NO_WARNINGS
 
 
 // FingerDlg.cpp: 实现文件
 //
 
 #include "pch.h"
+
+#include "Resource.h"
 #include "framework.h"
 #include "Finger.h"
 #include "FingerDlg.h"
@@ -65,29 +69,27 @@ void CFingerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_IMG_2, m_picCtrl2);
 	DDX_Text(pDX, IDC_EDIT_NAME, m_name);
 	DDX_Control(pDX, IDC_ZKFPENGX, m_zkfpEng);
+	DDX_Control(pDX, IDC_STATIC_IMG_3, m_picCtrl3);
+	DDX_Control(pDX, IDC_STATIC_IMG_4, m_picCtrl4);
+	DDX_Control(pDX, IDC_STATIC_IMG_5, m_picCtrl5);
+	DDX_Control(pDX, IDC_STATIC_IMG_6, m_picCtrl6);
+	DDX_Control(pDX, IDC_STATIC_IMG_7, m_picCtrl7);
+	DDX_Control(pDX, IDC_STATIC_IMG_8, m_picCtrl8);
+	DDX_Control(pDX, IDC_STATIC_IMG_9, m_picCtrl9);
+	DDX_Control(pDX, IDC_STATIC_IMG_10, m_picCtrl10);
+	DDX_Control(pDX, IDC_STATIC_IMG_11, m_picCtrl11);
+	DDX_Control(pDX, IDC_STATIC_IMG_12, m_picCtrl12);
 }
 
 BEGIN_MESSAGE_MAP(CFingerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BTN_EXIT, &CFingerDlg::OnBnClickedBtnExit)
-	ON_BN_CLICKED(IDC_BTN_CONNECT, &CFingerDlg::OnBnClickedBtnConnect)
-	ON_BN_CLICKED(IDC_BTN_DISCONNECT, &CFingerDlg::OnBnClickedBtnDisconnect)
-	ON_BN_CLICKED(IDC_BTN_CAPTURE, &CFingerDlg::OnBnClickedBtnCapture)
 	ON_BN_CLICKED(IDC_BTN_STEP_1, &CFingerDlg::OnBnClickedBtnStep1)
 	ON_BN_CLICKED(IDC_BTN_DATABASE, &CFingerDlg::OnBnClickedBtnDatabase)
-	ON_BN_CLICKED(IDC_BTN_STEP_2, &CFingerDlg::OnBnClickedBtnStep2)
-	ON_BN_CLICKED(IDC_BTN_STEP_3, &CFingerDlg::OnBnClickedBtnStep3)
-	ON_BN_CLICKED(IDC_BTN_STEP_4, &CFingerDlg::OnBnClickedBtnStep4)
-	ON_BN_CLICKED(IDC_BTN_STEP_5, &CFingerDlg::OnBnClickedBtnStep5)
-	ON_BN_CLICKED(IDC_BTN_STEP_6, &CFingerDlg::OnBnClickedBtnStep6)
-	ON_BN_CLICKED(IDC_BTN_STEP_7, &CFingerDlg::OnBnClickedBtnStep7)
-	ON_BN_CLICKED(IDC_BTN_STEP_8, &CFingerDlg::OnBnClickedBtnStep8)
-	ON_BN_CLICKED(IDC_BTN_STEP_9, &CFingerDlg::OnBnClickedBtnStep9)
-	ON_BN_CLICKED(IDC_BTN_STEP_10, &CFingerDlg::OnBnClickedBtnStep10)
-	ON_BN_CLICKED(IDC_BTN_STEP_11, &CFingerDlg::OnBnClickedBtnStep11)
 	ON_BN_CLICKED(IDC_BTN_STEP_12A, &CFingerDlg::OnBnClickedBtnStep12a)
 	ON_BN_CLICKED(IDC_BTN_STEP_12B, &CFingerDlg::OnBnClickedBtnStep12b)
+	ON_BN_CLICKED(IDC_BTN_STEP_12B2, &CFingerDlg::OnBnClickedBtnStep12b2)
 END_MESSAGE_MAP()
 BEGIN_EVENTSINK_MAP(CFingerDlg,CDialog)
 	ON_EVENT(CFingerDlg,IDC_ZKFPENGX,8,OnImageReceivedZkfpengx,VTS_PBOOL)
@@ -152,14 +154,82 @@ HCURSOR CFingerDlg::OnQueryDragIcon()
 
 void CFingerDlg::OnBnClickedBtnExit()
 {
+	CString strDir(TEMP);
+
+	if (strDir.IsEmpty())
+	{
+		RemoveDirectory(strDir);
+		return;
+	}
+
+	//首先删除文件及子文件夹
+	CFileFind   ff;
+	BOOL bFound = ff.FindFile(strDir + _T("\\*"), 0);
+	while (bFound)
+	{
+		bFound = ff.FindNextFile();
+		if (ff.GetFileName() == _T(".") || ff.GetFileName() == _T(".."))        continue;
+
+		//去掉文件(夹)只读等属性
+		SetFileAttributes(ff.GetFilePath(), FILE_ATTRIBUTE_NORMAL);
+		if (ff.IsDirectory())
+		{
+			//递归删除子文件夹
+			//DeleteDirectory(ff.GetFilePath());
+			RemoveDirectory(ff.GetFilePath());
+		}
+		else
+		{
+			DeleteFile(ff.GetFilePath());   //删除文件
+		}
+
+	}
+
+	ff.Close();
+
+	//然后删除该文件夹
+	RemoveDirectory(strDir);
+
+
+
+	CString strDir2(DB);
+
+	if (strDir2.IsEmpty())
+	{
+		RemoveDirectory(strDir2);
+		return;
+	}
+
+	//首先删除文件及子文件夹
+	CFileFind   ff2;
+	BOOL bFound2 = ff2.FindFile(strDir2 + _T("\\*"), 0);
+	while (bFound2)
+	{
+		bFound2 = ff2.FindNextFile();
+		if (ff2.GetFileName() == _T(".") || ff2.GetFileName() == _T(".."))        continue;
+
+		//去掉文件(夹)只读等属性
+		SetFileAttributes(ff2.GetFilePath(), FILE_ATTRIBUTE_NORMAL);
+		if (ff2.IsDirectory())
+		{
+			//递归删除子文件夹
+			//DeleteDirectory(ff.GetFilePath());
+			RemoveDirectory(ff2.GetFilePath());
+		}
+		else
+		{
+			DeleteFile(ff2.GetFilePath());   //删除文件
+		}
+
+	}
+
+	ff.Close();
+
+	//然后删除该文件夹
+	RemoveDirectory(strDir2);
+
+
 	OnOK();//关闭当前对话框（系统界面）
-}
-
-
-void CFingerDlg::OnBnClickedBtnConnect()
-{
-	m_zkfpEng.InitEngine();//启动指纹采集器
-	MessageBox(_T("采集器连接成功."), _T("提示"));//显示信息
 }
 
 
@@ -212,19 +282,6 @@ int ShowImageInCtrl(CStatic &picCtrl, char *filename)
 
 	return 0;
 }
-
-
-void CFingerDlg::OnBnClickedBtnDisconnect()
-{
-	m_zkfpEng.EndEngine();//停止指纹采集器
-}
-
-
-void CFingerDlg::OnBnClickedBtnCapture()
-{
-	m_zkfpEng.SaveBitmap(_T("capt.bmp"));//保存图像
-}
-
 
 int ReadBMPImgFilePara(char *fileName, int &width, int &height, int &depth)
 {
@@ -368,8 +425,19 @@ int SaveDataToTextFile(char *dstFile, float *data, int width, int height)
 //info（返回操作结果状态，成功时返回图像参数信息，失败时返回错误提示信息）
 int Step1_LoadBmpImage(char *info)
 {
-	//选择图像
-	char filename[MAX_PATH] = "capt.bmp";
+	CString strFile;
+	char filename[MAX_PATH] = { 0 };
+	CFileDialog dlgFile(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("bmp Files (*.bmp)|*.bmp|All Files (*.*)|*.*||"), NULL);
+	
+	if (dlgFile.DoModal() == IDOK)//如果用户在文件对话框中点击了“确定”按钮
+	{
+		strFile = dlgFile.GetPathName();
+
+		int num = WideCharToMultiByte(0, 0, strFile, -1, NULL, 0, NULL, false);
+		char* chStr = new char[num];
+		WideCharToMultiByte(0, 0, strFile, -1, chStr, num, NULL, false);
+		strcpy(filename, chStr);
+	}
 
 	//复制图像
 	CopyFile(ToWideChar(filename), ToWideChar(STEP_IMG_1), false);
@@ -412,22 +480,6 @@ int Step1_LoadBmpImage(char *info)
 }
 
 
-void CFingerDlg::OnBnClickedBtnStep1()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//载入图像
-	Step1_LoadBmpImage(info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_1);
-}
-
-
 void InitDatabase()//创建并初始化指纹库
 {
 	_mkdir(TEMP_DIR);//创建临时文件夹
@@ -458,10 +510,10 @@ void GetDatabaseInfo(char *info)//获取指纹库统计信息
 	fclose(index);//关闭文件
 
 	//统计指纹库信息
-	sprintf(info, "当前指纹库中共有%d条记录", pNo);
+	sprintf(info, "当前指纹库中共有%d条记录.", pNo);
 }
 
-
+//指纹库信息
 void CFingerDlg::OnBnClickedBtnDatabase()
 {
 	char info[MAX_PATH] = { 0 };//初始化显示信息
@@ -538,8 +590,6 @@ void Sort(unsigned char *data, int dsize)
 		}
 	}
 }
-
-
 //参数：ucImg(源图数据)，ucDstImg(结果图像数据),iWidth(图像宽度),iHeight(图像高度)
 int MidFilter(unsigned char *ucImg, unsigned char *ucDstImg, int iWidth, int iHeight)
 {
@@ -600,7 +650,7 @@ int MidFilter(unsigned char *ucImg, unsigned char *ucDstImg, int iWidth, int iHe
 		x[5] = *(pDown + j + 1);
 
 		//数组排序
-		Sort(x, 6);
+		Sort(x,6);
 
 		//结果取中值
 		*(ucDstImg + j) = x[3];
@@ -621,7 +671,7 @@ int MidFilter(unsigned char *ucImg, unsigned char *ucDstImg, int iWidth, int iHe
 		x[5] = *(pUp + j + 1);
 
 		//数组排序
-		Sort(x, 6);
+		Sort(x,6);
 
 		//结果取中值
 		*(ucDstImg + iWidth * (iHeight - 1) + j) = x[3];
@@ -798,24 +848,6 @@ int Step2_MidFilter(char *info)
 }
 
 
-//第2步:中值滤波
-void CFingerDlg::OnBnClickedBtnStep2()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//中值滤波
-	Step2_MidFilter(info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_1);//显示输入图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_2);//显示输出图像
-}
-
-
 //直方图均衡化
 //ucImg(源图数据),ucNormImg(结果图数据),iWidth(图像宽度),iHeight(图像高度)
 int HistoNormalize(unsigned char *ucImg, unsigned char *ucNormImg, int iWidth, int iHeight)
@@ -907,25 +939,6 @@ int Step3_Normalize(char *info)
 	sprintf(info, "完成直方图均衡化.");
 	return 0;
 }
-
-
-//第3步:直方图均衡化
-void CFingerDlg::OnBnClickedBtnStep3()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//直方图均衡化
-	Step3_Normalize(info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_2);//显示输入图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_3);//显示输出图像
-}
-
 
 //指纹脊线方向计算
 //ucImg(图像数据),fDirc(脊线方向数据),iWidth(图像宽度),iHeight(图像高度)
@@ -1029,9 +1042,9 @@ int DircLowPass(float *fDirc, float *fFitDirc, int iWidth, int iHeight)
 	memset(phi2y, 0, sizeof(float)*imgsize);
 	float nx, ny;
 	int val;
-	for (int y = 0; y < iHeight - blocksize; y++)//逐行遍历(除去边缘区段)
+	for (int y = 0; y <= iHeight - blocksize; y++)//逐行遍历(除去边缘区段)
 	{
-		for (int x = 0; x < iWidth - blocksize; x++)//逐列遍历(除去边缘区段)
+		for (int x = 0; x <= iWidth - blocksize; x++)//逐列遍历(除去边缘区段)
 		{
 			//对以当前像素为中心的滤波窗口内的所有像素值进行加权累加
 			nx = 0.0;
@@ -1114,29 +1127,14 @@ int Step4_Direction(char *info)
 	return 0;
 }
 
-
-//第4步:方向计算
-void CFingerDlg::OnBnClickedBtnStep4()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//指纹脊线方向计算
-	Step4_Direction(info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_3);//显示输入图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_4);//显示输出图像
-}
-
-
 //指纹脊线频率计算
 //ucImg(源图数据),fDirection(脊线方向数据),fFrequency(脊线频率结果数据),iWidth(图像宽度),iHeight(图像高度)
 int Frequency(unsigned char * ucImg, float * fDirection, float * fFrequency, int iWidth, int iHeight)
 {
+	if (iWidth <= 0 || iHeight <= 0 || !ucImg || !fDirection || !fFrequency)
+	{
+		return -1;
+	}
 	//窗口大小
 	const int SIZE_L = 32;
 	const int SIZE_W = 16;
@@ -1322,30 +1320,15 @@ int Step5_Frequency(char *info)
 	return 0;
 }
 
-
-//第5步：频率计算
-void CFingerDlg::OnBnClickedBtnStep5()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//指纹脊线频率计算
-	Step5_Frequency(info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_4);//显示输入图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_5);//显示输出图像
-}
-
-
 //指纹掩码计算
 //ucImg(源图数据),fDirection(脊线方向数据),fFrequency(脊线频率数据)
 //ucMask(掩码结果数据),iWidth(图像宽度),iHeight(图像高度)
 int GetMask(unsigned char * ucImg, float * fDirection, float * fFrequency, unsigned char * ucMask, int iWidth, int iHeight)
 {
+	if (!ucImg || !fDirection || !fFrequency || !ucMask || iWidth <= 0 || iHeight <= 0)
+	{
+		return -1;
+	}
 	//第1步:阈值分割(像素频率位于指定范围之内则设为前景点,否则设为背景点)
 	float freqMin = 1.0 / 25.0;
 	float freqMax = 1.0 / 3.0;
@@ -1485,25 +1468,6 @@ int Step6_Mask(char *info)
 	return 0;
 }
 
-
-//第6步:掩码计算
-void CFingerDlg::OnBnClickedBtnStep6()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//指纹掩码计算
-	Step6_Mask(info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_5);//显示输入图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_6);//显示输出图像
-}
-
-
 //Gabor滤波增强
 //ucImg(源图数据),fDirection(脊线方向数据),fFrequency(脊线频率数据),ucMask(掩码数据),ucImgEnhanced(滤波增强结果数据),iWidth(图像宽度),iHeight(图像高度)
 int GaborEnhance(unsigned char * ucImg, float * fDirection, float * fFrequency, unsigned char * ucMask, unsigned char * ucImgEnhanced, int iWidth, int iHeight)
@@ -1620,25 +1584,6 @@ int Step7_GaborEnhance(char *info)
 	return 0;
 }
 
-
-//第7步:Gabor增强
-void CFingerDlg::OnBnClickedBtnStep7()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//Gabor滤波增强
-	Step7_GaborEnhance(info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_6);//显示输入图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_7);//显示输出图像
-}
-
-
 //图像二值化
 //ucImage(源图数据),ucBinImage(结果图数据),iWidth(图像宽度),iHeight(图像高度),uThreshold(二值化灰度阈值)
 int BinaryImg(unsigned char * ucImage, unsigned char * ucBinImage, int iWidth, int iHeight, unsigned char uThreshold)
@@ -1715,28 +1660,14 @@ int Step8_Binary(char *info)
 	return 0;
 }
 
-
-void CFingerDlg::OnBnClickedBtnStep8()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//图像二值化
-	Step8_Binary(info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_7);//显示输入图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_8);//显示输出图像
-}
-
-
 //图像细化
 //ucBinedImg(源图数据),ucThinnedImage(结果图数据),iWidth(图像宽度),iHeight(图像高度),iIterativeLimit(最大迭代次数)
 int Thinning(unsigned char * ucBinedImg, unsigned char * ucThinnedImage, int iWidth, int iHeight, int iIterativeLimit)
 {
+	if (iWidth <= 0 || iHeight <= 0 || iIterativeLimit <= 0 || !ucBinedImg || !ucThinnedImage)
+	{
+		return -1;
+	}
 	//定义变量
 	unsigned char x1, x2, x3, x4, x5, x6, x7, x8, xp;
 	unsigned char g1, g2, g3, g4;
@@ -1967,25 +1898,6 @@ int Step9_Thinning(char *info)
 	return 0;
 }
 
-
-//第9步:细化
-void CFingerDlg::OnBnClickedBtnStep9()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//图像细化
-	Step9_Thinning(info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_8);//显示输入图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_9);//显示输出图像
-}
-
-
 //指纹特征提取
 //ucThinImg(源图数据),ucMinuImg(结果图数据),iWidth(图像宽度),iHeight(图像高度)
 int Extract(unsigned char * ucThinImg, unsigned char * ucMinuImg, int iWidth, int iHeight)
@@ -2094,25 +2006,6 @@ int Step10_MinuExtract(int &minuCount, char *info)
 	sprintf(info, "完成特征提取.");
 	return 0;
 }
-
-
-//第10步:特征提取
-void CFingerDlg::OnBnClickedBtnStep10()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//特征提取
-	Step10_MinuExtract(m_minuCount,info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_9);//显示输入图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_10);//显示输出图像
-}
-
 
 struct NEIGHBOR
 {
@@ -2423,13 +2316,6 @@ int SaveMinutiae(MINUTIAE * minutiaes, int count, char * fileName)
 //参数:minuCount(特征点数量),info(返回操作成功或失败提示信息)
 int Step11_MinuFilter(int &minuCount, char *info)
 {
-	////参数预检
-	//const int MINU_COUNT_THRED = 4;//特征点数量阈值(小于阈值则认为指纹特征无效)
-	//if (minuCount < MINU_COUNT_THRED)
-	//{
-	//	sprintf(info, "输入参数无效.");
-	//	return -1;
-	//}
 
 	//设置输入输出文件名
 	char srcTxtFile_Minu[MAX_PATH] = { STEP_TXT_10 };//特征图源数据文件名
@@ -2484,25 +2370,6 @@ int Step11_MinuFilter(int &minuCount, char *info)
 	return 0;
 }
 
-
-//第11步:特征过滤
-void CFingerDlg::OnBnClickedBtnStep11()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//特征过滤
-	Step11_MinuFilter(m_minuCount, info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_10);//显示输入图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_11);//显示输出图像
-}
-
-
 //获得新指纹编号
 int GetNewIndexInDB()
 {
@@ -2510,9 +2377,13 @@ int GetNewIndexInDB()
 	int sNo = 0;
 	char name[MAX_PATH] = { 0 }, srcFile[MAX_PATH] = { 0 }, mdlFile[MAX_PATH] = { 0 };
 	FILE *index = fopen(DB_INDEX_TXT, "r");
+	if (!index)
+	{
+		return -1;
+	}
 	while (!feof(index))
 	{
-		fscanf(index, "%d %s %s %s\n", &sNo, srcFile, mdlFile, name);
+		fscanf(index, "%d %s %s %s \n", &sNo, srcFile, mdlFile, name);
 	}
 	fclose(index);
 
@@ -2525,8 +2396,8 @@ int GetNewIndexInDB()
 
 
 //特征入库单步测试
-//参数:userName(登记人姓名),info(返回操作成功或失败提示信息)
-int Step12_Enroll(char *userName, char *info)
+//参数:userName(登记人姓名)info(返回操作成功或失败提示信息)
+int Step12_Enroll(char *userName,char *info)
 {
 	//设置输入文件名
 	char srcImgFile[MAX_PATH] = { STEP_IMG_1 };//源图文件名
@@ -2554,7 +2425,7 @@ int Step12_Enroll(char *userName, char *info)
 	fprintf(index, "%d %s %s %s\n", sNo, dstImgFile, dstMdlFile, regName);
 	fclose(index);
 
-	sprintf(info, "完成特征入库.");
+	sprintf(info, "完成指纹入库.");
 	return 0;
 }
 
@@ -2567,28 +2438,6 @@ char *ToChar(wchar_t *str)
 	WideCharToMultiByte(0, 0, str, -1, chStr, num, NULL, false);
 	return chStr;
 }
-
-
-//第12步:特征入库
-void CFingerDlg::OnBnClickedBtnStep12a()
-{
-	//初始化操作结果信息
-	char info[MAX_PATH] = { 0 };
-
-	//获得界面输入内容
-	UpdateData(true);
-
-	//特征入库
-	Step12_Enroll(ToChar(m_name.GetBuffer()), info);
-
-	//显示操作结果信息
-	m_staticInfo.SetWindowText(ToWideChar(info));
-
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_1);//显示原始指纹图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_11);//显示指纹特征图像
-}
-
 
 //计算线段倾斜度
 //x1(端点1横坐标),y1(端点1纵坐标),x2(端点2横坐标),y2(端点2纵坐标)
@@ -2900,24 +2749,6 @@ int Step12_Match(char *info)
 }
 
 
-////第12步:特征匹配
-//void CFingerDlg::OnBnClickedBtnStep12b()
-//{
-//	//初始化操作结果信息
-//	char info[MAX_PATH] = { 0 };
-//
-//	//特征匹配
-//	Step12_Match(info);
-//
-//	//显示操作结果信息
-//	m_staticInfo.SetWindowText(ToWideChar(info));
-//
-//	//显示图像
-//	ShowImageInCtrl(m_picCtrl1, STEP_IMG_1);//显示原始指纹图像
-//	ShowImageInCtrl(m_picCtrl2, STEP_IMG_12);//显示指纹特征图像
-//}
-
-
 //指纹库预检(判断指纹库是否为空)
 bool EmptyDB()
 {
@@ -2974,7 +2805,7 @@ int Step12_Identify(char *info)
 
 	while (!feof(index))
 	{
-		//读取指纹记录信息(指纹编号/指纹图像文件名/特征模板文件名/登记人姓名)
+		//读取指纹记录信息(指纹编号/指纹图像文件名/特征模板文件名/登记人姓名/登记人学号)
 		fscanf(index, "%d %s %s %s\n", &id, src, mdl, name);
 		sprintf(dstMdlFile, mdl);
 
@@ -3008,26 +2839,151 @@ int Step12_Identify(char *info)
 		return -2;
 	}
 	CopyFile(ToWideChar(maxSrc), ToWideChar(dstImgFile), false);//复制识别结果图像
-	sprintf(info, "识别成功,识别结果:姓名[%s],目标指纹[%s],相似度[%.2f].", maxName, maxSrc, maxSimilar);
+	sprintf(info, "识别成功!\n识别结果:姓名[%s],目标指纹[%s],相似度[%.2f].", maxName, maxSrc, maxSimilar);
 
 	return 0;
 }
 
-
-//第12步:特征匹配
-void CFingerDlg::OnBnClickedBtnStep12b()
+int flag1 = 0;
+int flag2 = 0;
+int flag3 = 0;
+//载入图像
+void CFingerDlg::OnBnClickedBtnStep1()
 {
-	//初始化操作结果信息
 	char info[MAX_PATH] = { 0 };
+	Step1_LoadBmpImage(info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	ShowImageInCtrl(m_picCtrl1, STEP_IMG_1);
+	flag1 = 1;
+}
 
-	//特征匹配
-	//Step12_Match(info);//特征匹配
-	Step12_Identify(info);//指纹识别
 
-	//显示操作结果信息
+//特征提取
+void CFingerDlg::OnBnClickedBtnStep12b2()
+{
+	if (flag1 == 0)
+	{
+		MessageBox(_T("尚未载入图像！"), _T("提示"));
+		return;
+	}
+	//中值滤波
+	char info[MAX_PATH] = { 0 };
 	m_staticInfo.SetWindowText(ToWideChar(info));
 
-	//显示图像
-	ShowImageInCtrl(m_picCtrl1, STEP_IMG_1);//显示原始指纹图像
-	ShowImageInCtrl(m_picCtrl2, STEP_IMG_12);//显示指纹特征图像
+	int x2=Step2_MidFilter(info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	if (!x2)
+	{
+		ShowImageInCtrl(m_picCtrl2, STEP_IMG_2);
+	}
+
+	//均衡化
+	int x3=Step3_Normalize(info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	if (!x3)
+	{
+		ShowImageInCtrl(m_picCtrl3, STEP_IMG_3);
+	}
+	
+	//方向计算
+	int x4=Step4_Direction(info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	if (!x4)
+	{
+		ShowImageInCtrl(m_picCtrl4, STEP_IMG_4);
+	}
+	
+	//频率计算
+	int x5=Step5_Frequency(info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	if (!x5)
+	{
+		ShowImageInCtrl(m_picCtrl5, STEP_IMG_5);
+	}
+
+	//掩码计算
+	int x6=Step6_Mask(info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	if (!x6)
+	{
+		ShowImageInCtrl(m_picCtrl6, STEP_IMG_6);
+	}
+	
+	//Gabor增强
+	int x7=Step7_GaborEnhance(info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	if (!x7)
+	{
+		ShowImageInCtrl(m_picCtrl7, STEP_IMG_7);
+	}
+	
+	//二值化
+	int x8=Step8_Binary(info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	if (!x8)
+	{
+		ShowImageInCtrl(m_picCtrl8, STEP_IMG_8);
+	}
+	
+	//细化
+	int x9=Step9_Thinning(info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	if (!x9)
+	{
+		ShowImageInCtrl(m_picCtrl9, STEP_IMG_9);
+	}
+	
+	//特征提取
+	int x10=Step10_MinuExtract(m_minuCount, info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	if (!x10)
+	{
+		ShowImageInCtrl(m_picCtrl10, STEP_IMG_10);
+	}
+
+	//特征过滤
+	int x11=Step11_MinuFilter(m_minuCount, info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	if (!x10)
+	{
+		ShowImageInCtrl(m_picCtrl11, STEP_IMG_11);
+	}
+	flag2 = 1;
 }
+
+
+//特征入库
+void CFingerDlg::OnBnClickedBtnStep12a()
+{
+	if (flag2 == 0)
+	{
+		MessageBox(_T("尚未完成指纹提取！"), _T("提示"));
+		return;
+	}
+	char info[MAX_PATH] = { 0 };
+	//获取界面输入内容
+	UpdateData(true);
+	if (m_name.GetLength() == 0)
+	{
+		MessageBox(_T("请输入姓名！"), _T("提示"));
+		return;
+	}
+	Step12_Enroll(ToChar(m_name.GetBuffer()),info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	flag3 = 1;
+}
+
+//指纹匹配
+void CFingerDlg::OnBnClickedBtnStep12b()
+{
+	if (flag3 == 0)
+	{
+		MessageBox(_T("尚未完成指纹入库！"), _T("提示"));
+		return;
+	}
+	char info[MAX_PATH] = { 0 };
+	Step12_Identify(info);
+	m_staticInfo.SetWindowText(ToWideChar(info));
+	ShowImageInCtrl(m_picCtrl12, STEP_IMG_12);
+}
+

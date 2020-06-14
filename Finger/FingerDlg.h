@@ -9,7 +9,11 @@
 
 #include<direct.h>//for _mkdir()
 #define TEMP_DIR "temp\\"//临时文件夹，用于存放指纹入库前的所有中间处理结果
+#define TEMP "temp"
+
 #define DB_DIR "Database\\"//指纹库文件夹
+#define DB "Database"//指纹库文件夹
+
 #define DB_INDEX_TXT "Database\\index.txt"//指纹库索引文件
 void InitDatabase();//创建并初始化指纹库
 void InitFile(char *filename);//创建并初始化文件
@@ -47,25 +51,23 @@ public:
 	CStatic m_staticInfo;
 	CStatic m_picCtrl1;
 	CStatic m_picCtrl2;
+	CStatic m_picCtrl3;
+	CStatic m_picCtrl4;
+	CStatic m_picCtrl5;
+	CStatic m_picCtrl6;
+	CStatic m_picCtrl7;
+	CStatic m_picCtrl8;
+	CStatic m_picCtrl9;
+	CStatic m_picCtrl10;
+	CStatic m_picCtrl11;
+	CStatic m_picCtrl12;
 	CString m_name;
 	int m_minuCount;
 	CZKFPEngX m_zkfpEng;
 	afx_msg void OnBnClickedBtnExit();
-	afx_msg void OnBnClickedBtnConnect();
-	afx_msg void OnBnClickedBtnDisconnect();
-	afx_msg void OnBnClickedBtnCapture();
 	afx_msg void OnBnClickedBtnStep1();
 	afx_msg void OnBnClickedBtnDatabase();
-	afx_msg void OnBnClickedBtnStep2();
-	afx_msg void OnBnClickedBtnStep3();
-	afx_msg void OnBnClickedBtnStep4();
-	afx_msg void OnBnClickedBtnStep5();
-	afx_msg void OnBnClickedBtnStep6();
-	afx_msg void OnBnClickedBtnStep7();
-	afx_msg void OnBnClickedBtnStep8();
-	afx_msg void OnBnClickedBtnStep9();
-	afx_msg void OnBnClickedBtnStep10();
-	afx_msg void OnBnClickedBtnStep11();
 	afx_msg void OnBnClickedBtnStep12a();
 	afx_msg void OnBnClickedBtnStep12b();
+	afx_msg void OnBnClickedBtnStep12b2();
 };
